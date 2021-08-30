@@ -8,8 +8,7 @@ const port = process.env.PORT || 5000;
 let players = {};
 let tables = [null, null, null];
 
-
-for (let i = 0; i < 30; i++) players[`test${i}`] = { matchHistory: {}, groupNum: 0, isInactive: false }
+//for (let i = 0; i < 30; i++) players[`test${i}`] = { matchHistory: {}, groupNum: 0, isInactive: false }
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 app.use(bodyParser.json());
@@ -18,12 +17,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'build')));
 
 app.get('/home', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.post('/reset', (req, res) => {
     players = {};
     res.send(players);
+});
+
+app.post('/loadSave', (req, res) => {
+    try {
+        let { save } = req.body;
+        players = save;
+        res.send(players);
+    } catch (err) {
+        res.status(400).send({ err: "Error setting save state " });
+    }
 });
 
 app.post('/addPlayer', (req, res) => {

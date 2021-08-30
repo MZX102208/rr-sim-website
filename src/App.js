@@ -5,8 +5,8 @@ import Tab from '@material-ui/core/Tab';
 
 import Scoreboard from "./views/Scoreboard";
 import TableView from "./views/TableView";
+import PlayersView from "./views/PlayersView";
 
-import { getParticipants } from "./Utils";
 
 function App() {
 	const [selectedTab, setSelectedTab] = useState(0);
@@ -89,11 +89,21 @@ function App() {
 			});
 	}
 
+	const loadSave = (playersList) => {
+		fetch(`/loadSave`, { method: "POST", body: JSON.stringify({ save: playersList }), headers: { 'Content-Type': 'application/json' } })
+			.then((res) => res.json())
+			.then((json) => {
+				if (!json.err) setPlayersList(json);
+				else console.log(json.err);
+			});
+	}
+
 	return (
 		<div className="App">
 			<Tabs value={selectedTab} onChange={(event, newValue) => { setSelectedTab(newValue); }}>
 				<Tab label="Scoreboard" />
 				<Tab label="Matches" />
+				<Tab label="Save/Load" />
 			</Tabs>
 			{/* <CircularProgress style={{ marginTop: '5rem', marginLeft: '5rem' }} /> */}
 			{selectedTab === 0 && <Scoreboard playersList={playersList}
@@ -106,6 +116,7 @@ function App() {
 				clearTable={clearTable}
 				setNumTables={setNumTables}
 				setScore={setScore} />}
+			{selectedTab === 2 && <PlayersView playersList={playersList} loadSave={loadSave} />}
 		</div>
 	);
 }
